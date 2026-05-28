@@ -2,36 +2,48 @@
 
 int main() {
     // Desafio Batalha Naval - MateCheck
-    // Nivel Aventureiro - Tabuleiro completo e navios diagonais
-    // Neste nivel, eu uso uma matriz 10x10 para representar o tabuleiro.
-    // O numero 0 representa agua e o numero 3 representa parte de um navio.
+    // Nivel Mestre - Habilidades especiais e areas de efeito
+    // Neste nivel, eu mantenho o tabuleiro 10x10 e adiciono habilidades especiais.
+    // 0 = agua
+    // 3 = navio
+    // 5 = area afetada pela habilidade
 
     int tabuleiro[10][10];
+    int cone[5][5];
+    int cruz[5][5];
+    int octaedro[5][5];
+
+    int tamanhoTabuleiro = 10;
+    int tamanhoHabilidade = 5;
     int tamanhoNavio = 3;
 
-    // Coordenadas iniciais dos navios
-    // Navio 1: vertical
-    int linhaVertical = 1;
-    int colunaVertical = 2;
+    // Coordenadas dos navios
+    int linhaNavioVertical = 1;
+    int colunaNavioVertical = 2;
 
-    // Navio 2: horizontal
-    int linhaHorizontal = 5;
-    int colunaHorizontal = 4;
+    int linhaNavioHorizontal = 6;
+    int colunaNavioHorizontal = 4;
 
-    // Navio 3: diagonal principal
-    // A linha e a coluna aumentam juntas
-    int linhaDiagonal1 = 0;
-    int colunaDiagonal1 = 0;
+    int linhaNavioDiagonal1 = 0;
+    int colunaNavioDiagonal1 = 0;
 
-    // Navio 4: diagonal secundaria
-    // A linha aumenta e a coluna diminui
-    int linhaDiagonal2 = 2;
-    int colunaDiagonal2 = 7;
+    int linhaNavioDiagonal2 = 2;
+    int colunaNavioDiagonal2 = 8;
 
-    // Aqui eu inicializo todo o tabuleiro com 0.
-    // Isso significa que, no inicio, todas as posicoes sao agua.
-    for (int linha = 0; linha < 10; linha++) {
-        for (int coluna = 0; coluna < 10; coluna++) {
+    // Pontos de origem das habilidades no tabuleiro
+    int origemConeLinha = 1;
+    int origemConeColuna = 5;
+
+    int origemCruzLinha = 5;
+    int origemCruzColuna = 2;
+
+    int origemOctaedroLinha = 6;
+    int origemOctaedroColuna = 7;
+
+    // Primeiro eu inicializo o tabuleiro com 0.
+    // Isso significa que todas as posicoes começam como agua.
+    for (int linha = 0; linha < tamanhoTabuleiro; linha++) {
+        for (int coluna = 0; coluna < tamanhoTabuleiro; coluna++) {
             tabuleiro[linha][coluna] = 0;
         }
     }
@@ -39,66 +51,157 @@ int main() {
     // Aqui eu posiciono o navio vertical.
     // A linha muda e a coluna fica fixa.
     for (int i = 0; i < tamanhoNavio; i++) {
-        tabuleiro[linhaVertical + i][colunaVertical] = 3;
+        tabuleiro[linhaNavioVertical + i][colunaNavioVertical] = 3;
     }
 
     // Aqui eu posiciono o navio horizontal.
     // A coluna muda e a linha fica fixa.
     for (int i = 0; i < tamanhoNavio; i++) {
-        tabuleiro[linhaHorizontal][colunaHorizontal + i] = 3;
+        tabuleiro[linhaNavioHorizontal][colunaNavioHorizontal + i] = 3;
     }
 
     // Aqui eu posiciono o primeiro navio diagonal.
-    // A linha e a coluna aumentam ao mesmo tempo.
+    // A linha e a coluna aumentam juntas.
     for (int i = 0; i < tamanhoNavio; i++) {
-        tabuleiro[linhaDiagonal1 + i][colunaDiagonal1 + i] = 3;
+        tabuleiro[linhaNavioDiagonal1 + i][colunaNavioDiagonal1 + i] = 3;
     }
 
     // Aqui eu posiciono o segundo navio diagonal.
     // A linha aumenta e a coluna diminui.
     for (int i = 0; i < tamanhoNavio; i++) {
-        tabuleiro[linhaDiagonal2 + i][colunaDiagonal2 - i] = 3;
+        tabuleiro[linhaNavioDiagonal2 + i][colunaNavioDiagonal2 - i] = 3;
     }
 
-    // Aqui eu mostro as coordenadas do navio vertical.
-    printf("===== Coordenadas do Navio Vertical =====\n");
-    for (int i = 0; i < tamanhoNavio; i++) {
-        printf("Parte %d: Linha %d, Coluna %d\n", i + 1, linhaVertical + i, colunaVertical);
+    // Aqui eu crio a matriz da habilidade Cone.
+    // O cone começa pequeno em cima e aumenta para baixo.
+    for (int linha = 0; linha < tamanhoHabilidade; linha++) {
+        for (int coluna = 0; coluna < tamanhoHabilidade; coluna++) {
+            if (coluna >= 2 - linha && coluna <= 2 + linha) {
+                cone[linha][coluna] = 1;
+            } else {
+                cone[linha][coluna] = 0;
+            }
+        }
+    }
+
+    // Aqui eu crio a matriz da habilidade Cruz.
+    // A linha do meio e a coluna do meio recebem 1.
+    for (int linha = 0; linha < tamanhoHabilidade; linha++) {
+        for (int coluna = 0; coluna < tamanhoHabilidade; coluna++) {
+            if (linha == 2 || coluna == 2) {
+                cruz[linha][coluna] = 1;
+            } else {
+                cruz[linha][coluna] = 0;
+            }
+        }
+    }
+
+    // Aqui eu crio a matriz da habilidade Octaedro.
+    // O formato fica parecido com um losango.
+    for (int linha = 0; linha < tamanhoHabilidade; linha++) {
+        for (int coluna = 0; coluna < tamanhoHabilidade; coluna++) {
+            if ((linha == 0 && coluna == 2) ||
+                (linha == 1 && coluna >= 1 && coluna <= 3) ||
+                (linha == 2 && coluna >= 0 && coluna <= 4) ||
+                (linha == 3 && coluna >= 1 && coluna <= 3) ||
+                (linha == 4 && coluna == 2)) {
+                octaedro[linha][coluna] = 1;
+            } else {
+                octaedro[linha][coluna] = 0;
+            }
+        }
+    }
+
+    // Aqui eu aplico a habilidade Cone no tabuleiro.
+    // Quando a matriz cone tiver valor 1, eu marco 5 no tabuleiro.
+    for (int linha = 0; linha < tamanhoHabilidade; linha++) {
+        for (int coluna = 0; coluna < tamanhoHabilidade; coluna++) {
+            int linhaTabuleiro = origemConeLinha + linha;
+            int colunaTabuleiro = origemConeColuna + coluna - 2;
+
+            if (cone[linha][coluna] == 1 &&
+                linhaTabuleiro >= 0 && linhaTabuleiro < tamanhoTabuleiro &&
+                colunaTabuleiro >= 0 && colunaTabuleiro < tamanhoTabuleiro &&
+                tabuleiro[linhaTabuleiro][colunaTabuleiro] == 0) {
+
+                tabuleiro[linhaTabuleiro][colunaTabuleiro] = 5;
+            }
+        }
+    }
+
+    // Aqui eu aplico a habilidade Cruz no tabuleiro.
+    // A habilidade so marca a posicao se ela estiver dentro do tabuleiro e ainda for agua.
+    for (int linha = 0; linha < tamanhoHabilidade; linha++) {
+        for (int coluna = 0; coluna < tamanhoHabilidade; coluna++) {
+            int linhaTabuleiro = origemCruzLinha + linha - 2;
+            int colunaTabuleiro = origemCruzColuna + coluna - 2;
+
+            if (cruz[linha][coluna] == 1 &&
+                linhaTabuleiro >= 0 && linhaTabuleiro < tamanhoTabuleiro &&
+                colunaTabuleiro >= 0 && colunaTabuleiro < tamanhoTabuleiro &&
+                tabuleiro[linhaTabuleiro][colunaTabuleiro] == 0) {
+
+                tabuleiro[linhaTabuleiro][colunaTabuleiro] = 5;
+            }
+        }
+    }
+
+    // Aqui eu aplico a habilidade Octaedro no tabuleiro.
+    // O valor 5 representa a area atingida pela habilidade.
+    for (int linha = 0; linha < tamanhoHabilidade; linha++) {
+        for (int coluna = 0; coluna < tamanhoHabilidade; coluna++) {
+            int linhaTabuleiro = origemOctaedroLinha + linha - 2;
+            int colunaTabuleiro = origemOctaedroColuna + coluna - 2;
+
+            if (octaedro[linha][coluna] == 1 &&
+                linhaTabuleiro >= 0 && linhaTabuleiro < tamanhoTabuleiro &&
+                colunaTabuleiro >= 0 && colunaTabuleiro < tamanhoTabuleiro &&
+                tabuleiro[linhaTabuleiro][colunaTabuleiro] == 0) {
+
+                tabuleiro[linhaTabuleiro][colunaTabuleiro] = 5;
+            }
+        }
+    }
+
+    // Exibicao da matriz Cone
+    printf("===== Habilidade Cone =====\n");
+    for (int linha = 0; linha < tamanhoHabilidade; linha++) {
+        for (int coluna = 0; coluna < tamanhoHabilidade; coluna++) {
+            printf("%d ", cone[linha][coluna]);
+        }
+        printf("\n");
     }
 
     printf("\n");
 
-    // Aqui eu mostro as coordenadas do navio horizontal.
-    printf("===== Coordenadas do Navio Horizontal =====\n");
-    for (int i = 0; i < tamanhoNavio; i++) {
-        printf("Parte %d: Linha %d, Coluna %d\n", i + 1, linhaHorizontal, colunaHorizontal + i);
+    // Exibicao da matriz Cruz
+    printf("===== Habilidade Cruz =====\n");
+    for (int linha = 0; linha < tamanhoHabilidade; linha++) {
+        for (int coluna = 0; coluna < tamanhoHabilidade; coluna++) {
+            printf("%d ", cruz[linha][coluna]);
+        }
+        printf("\n");
     }
 
     printf("\n");
 
-    // Aqui eu mostro as coordenadas do primeiro navio diagonal.
-    printf("===== Coordenadas do Navio Diagonal 1 =====\n");
-    for (int i = 0; i < tamanhoNavio; i++) {
-        printf("Parte %d: Linha %d, Coluna %d\n", i + 1, linhaDiagonal1 + i, colunaDiagonal1 + i);
+    // Exibicao da matriz Octaedro
+    printf("===== Habilidade Octaedro =====\n");
+    for (int linha = 0; linha < tamanhoHabilidade; linha++) {
+        for (int coluna = 0; coluna < tamanhoHabilidade; coluna++) {
+            printf("%d ", octaedro[linha][coluna]);
+        }
+        printf("\n");
     }
 
     printf("\n");
 
-    // Aqui eu mostro as coordenadas do segundo navio diagonal.
-    printf("===== Coordenadas do Navio Diagonal 2 =====\n");
-    for (int i = 0; i < tamanhoNavio; i++) {
-        printf("Parte %d: Linha %d, Coluna %d\n", i + 1, linhaDiagonal2 + i, colunaDiagonal2 - i);
-    }
+    // Aqui eu mostro o tabuleiro completo com navios e areas de habilidade.
+    printf("===== Tabuleiro com Navios e Habilidades =====\n");
+    printf("0 = Agua | 3 = Navio | 5 = Area afetada\n\n");
 
-    printf("\n");
-
-    // Aqui eu exibo o tabuleiro completo.
-    // 0 = agua
-    // 3 = navio
-    printf("===== Tabuleiro Batalha Naval =====\n\n");
-
-    for (int linha = 0; linha < 10; linha++) {
-        for (int coluna = 0; coluna < 10; coluna++) {
+    for (int linha = 0; linha < tamanhoTabuleiro; linha++) {
+        for (int coluna = 0; coluna < tamanhoTabuleiro; coluna++) {
             printf("%d ", tabuleiro[linha][coluna]);
         }
         printf("\n");
